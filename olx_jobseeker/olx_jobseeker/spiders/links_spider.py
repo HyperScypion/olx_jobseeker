@@ -3,13 +3,12 @@ from ..items import OlxJobseekerItem
 
 class LinksSpider(scrapy.Spider):
     name = 'links'
-    start_urls = ['https://www.olx.pl/praca/']
+    start_urls = ['https://www.olx.pl/praca/?page=1']
 
     def parse(self, response):
 
         items = OlxJobseekerItem()
 
-        # next_page = response.css('a.pageNextPrev').xpath('@href').extract()
         offer_wrapper = response.css('div.offer-wrapper')
 
         for data in offer_wrapper:
@@ -28,3 +27,9 @@ class LinksSpider(scrapy.Spider):
             items['salary_from'] = salary_from
             items['salary_to'] = salary_to
             yield items
+
+        # next_page = response.css('a.pageNextPrev').xpath('@href').extract()
+        next_page = response.css('span.next a::attr(href)').get()
+
+        if next_page is not None:
+            yield response.follow(next_page, callback=self.parse)
