@@ -14,6 +14,7 @@ BOT_NAME = 'olx_jobseeker'
 SPIDER_MODULES = ['olx_jobseeker.spiders']
 NEWSPIDER_MODULE = 'olx_jobseeker.spiders'
 
+FEED_EXPORT_ENCODING = 'utf-8'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'olx_jobseeker (+http://www.yourdomain.com)'
