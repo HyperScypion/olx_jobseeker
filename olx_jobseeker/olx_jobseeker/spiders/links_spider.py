@@ -28,7 +28,6 @@ class LinksSpider(scrapy.Spider):
             items['salary_to'] = salary_to
             yield items
 
-        # next_page = response.css('a.pageNextPrev').xpath('@href').extract()
         next_page = response.css('span.next a::attr(href)').get()
 
         if next_page is not None:
