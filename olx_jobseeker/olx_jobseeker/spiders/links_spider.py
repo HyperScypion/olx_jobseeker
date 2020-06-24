@@ -1,11 +1,13 @@
 import scrapy
-
+from ..items import OlxJobseekerItem
 
 class LinksSpider(scrapy.Spider):
     name = 'links'
     start_urls = ['https://www.olx.pl/praca/']
 
     def parse(self, response):
+
+        items = OlxJobseekerItem()
 
         # next_page = response.css('a.pageNextPrev').xpath('@href').extract()
         offer_wrapper = response.css('div.offer-wrapper')
@@ -19,6 +21,10 @@ class LinksSpider(scrapy.Spider):
             except IndexError:
                 salary_from = 0
                 salary_to = 0
-            yield {'title': title, 'link': link, 'salary_from': salary_from, 'salary_to': salary_to}
 
-
+            items['title'] = title
+            items['description'] = ''
+            items['link'] = link
+            items['salary_from'] = salary_from
+            items['salary_to'] = salary_to
+            yield items
