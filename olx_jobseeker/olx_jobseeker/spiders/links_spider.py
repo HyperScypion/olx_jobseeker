@@ -1,5 +1,8 @@
+import sys
 import scrapy
 from ..items import OlxJobseekerItem
+sys.path.append('../../utils')
+from utils import cleaner
 
 class LinksSpider(scrapy.Spider):
     name = 'links'
@@ -7,13 +10,14 @@ class LinksSpider(scrapy.Spider):
 
     def parse(self, response):
 
-        items = OlxJobseekerItem()
 
         offer_wrapper = response.css('div.offer-wrapper')
 
         for data in offer_wrapper:
+            items = OlxJobseekerItem()
             title = data.css('strong::text').extract()
             link = data.css('h3.lheight22 a::attr(href)').get()
+
             try:
                 salary_from = data.css('span.price-label::text')[0].extract()
                 salary_to = data.css('span.price-label::text')[1].extract()
@@ -26,11 +30,10 @@ class LinksSpider(scrapy.Spider):
             items['salary_from'] = salary_from
             items['salary_to'] = salary_to    
             
-            if link:
-                req = scrapy.Request(link, self.parse_offer)
-                req.meta['items'] = items
-                yield req
-
+            
+            req = scrapy.Request(link, self.parse_offer, dont_filter=True)
+            req.meta['items'] = items
+            yield req
 
         next_page = response.css('span.next a::attr(href)').get()
 
@@ -40,6 +43,8 @@ class LinksSpider(scrapy.Spider):
 
     def parse_offer(self, response):
         items = response.meta['items']
-        items['description'] = response.css('div.lheight20').extract()
+        resp = response.css('div.lheight20').extract()
+        res = [cleaner.clean_data(data) for data in resp]
+        items['description'] = res
         yield items
         
