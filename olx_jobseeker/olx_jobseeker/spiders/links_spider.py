@@ -13,7 +13,7 @@ class LinksSpider(scrapy.Spider):
 
         for data in offer_wrapper:
             title = data.css('strong::text').extract()
-            link = data.css('h3.lheight22 a').xpath('@href').extract()
+            link = data.css('h3.lheight22 a::attr(href)').get()
             try:
                 salary_from = data.css('span.price-label::text')[0].extract()
                 salary_to = data.css('span.price-label::text')[1].extract()
@@ -22,13 +22,24 @@ class LinksSpider(scrapy.Spider):
                 salary_to = 0
 
             items['title'] = title
-            items['description'] = ''
             items['link'] = link
             items['salary_from'] = salary_from
-            items['salary_to'] = salary_to
-            yield items
+            items['salary_to'] = salary_to    
+            
+            if link:
+                req = scrapy.Request(link, self.parse_offer)
+                req.meta['items'] = items
+                yield req
+
 
         next_page = response.css('span.next a::attr(href)').get()
 
-        if next_page is not None:
-            yield response.follow(next_page, callback=self.parse)
+        # if next_page is not None:
+        #    yield response.follow(next_page, callback=self.parse)
+
+
+    def parse_offer(self, response):
+        items = response.meta['items']
+        items['description'] = response.css('div.lheight20').extract()
+        yield items
+        
