@@ -12,7 +12,8 @@ class OlxJobseekerItem(scrapy.Item):
     # define the fields for your item here like:
     title = scrapy.Field()
     description = scrapy.Field()
-    link = scrapy.Field() 
+    link = scrapy.Field()
+    location = scrapy.Field()
     salary_from = scrapy.Field()
     salary_to = scrapy.Field()
 

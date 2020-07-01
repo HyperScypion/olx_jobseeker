@@ -47,5 +47,7 @@ class LinksSpider(scrapy.Spider):
         resp = response.css('div.lheight20').extract()
         res = [cleaner.clean_data(data) for data in resp]
         items['description'] = res
+        location = response.css('address').extract()
+        items['location'] = [cleaner.clean_data(info) for info in location]
         yield items
         
